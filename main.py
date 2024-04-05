@@ -124,8 +124,6 @@ def getDmStates(spark):
 
     return dm_states
 
-
-
 def getDmSellers(spark):
     public_sellers = getPublicSellers(spark)
     data = public_sellers.select('seller_id', 'seller_name', 'tx_commission')
