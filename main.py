@@ -234,8 +234,8 @@ def main():
     dm_states = getDmStates(spark)
     dm_states.show()
 
-    # exibir = setFtSales(spark)
-    # exibir.show()
+    ft_sales = setFtSales(spark)
+    ft_sales.show()
 
 
 if __name__ == "__main__":
