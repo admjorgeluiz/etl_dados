@@ -172,7 +172,6 @@ def getDmSalesItems(spark):
     data = data.withColumn("sk_sales_items", monotonically_increasing_id())
     return data
 
-
 def createFtSales(spark):
     ft_sales_schema = StructType([
         StructField("customer_id", IntegerType()),
@@ -185,19 +184,24 @@ def createFtSales(spark):
 
     return ft_sales
 
-
 def setFtSales(spark):
+
     ft_sales = createFtSales(spark)
 
-    dm_products = getDmProducts(spark).select("product_id")
-    dm_customers = getDmCustomers(spark).select("customer_id")
-    dm_suppliers = getDmSuppliers(spark).select("supplier_id")
-    dm_sellers = getDmSellers(spark).select("seller_id")
+    products = getDmProducts(spark)
+    customers = getDmCustomers(spark)
+    suppliers = getDmSuppliers(spark)
+    sellers = getDmSellers(spark)
 
-    ft_sales = ft_sales.join(dm_customers, on="customer_id", how="inner")
-    ft_sales = ft_sales.join(dm_sellers, on="seller_id", how="inner")
-    ft_sales = ft_sales.join(dm_suppliers, on="supplier_id", how="inner")
-    ft_sales = ft_sales.join(dm_products, on="product_id", how="inner")
+    dm_products = products.select("product_id")
+    dm_customers = customers.select("customer_id")
+    dm_suppliers = suppliers.select("supplier_id")
+    dm_sellers = sellers.select("seller_id")
+
+    ft_sales = ft_sales.join(dm_products).join(dm_customers).join(dm_suppliers).join(dm_sellers)
+    #ft_sales = ft_sales.join(dm_sellers, on="seller_id", how="inner")
+    #ft_sales = ft_sales.join(dm_suppliers, on="supplier_id", how="inner")
+    #ft_sales = ft_sales.join(dm_products, on="product_id", how="inner")
 
     return ft_sales
 
@@ -207,36 +211,35 @@ def main():
         .config('spark.jars.packages', 'org.postgresql:postgresql:42.7.3') \
         .getOrCreate()
 
-    # dm_dates = getDmDates(spark)
+    dm_dates = getDmDates(spark)
     # dm_dates.show()
 
-    # dm_sellers = getDmSellers(spark)
+    dm_sellers = getDmSellers(spark)
     # dm_sellers.show()
 
-    # dm_suppliers = getDmSuppliers(spark)
+    dm_suppliers = getDmSuppliers(spark)
     # dm_suppliers.show()
 
-    # dm_customers = getDmCustomers(spark)
+    dm_customers = getDmCustomers(spark)
     # dm_customers.show()
 
-    # dm_categories = getDmCategories(spark)
+    dm_categories = getDmCategories(spark)
     # dm_categories.show()
 
-    # dm_products = getDmProducts(spark)
+    dm_products = getDmProducts(spark)
     # dm_products.show()
 
-    # dm_sales = getDmSales(spark)
+    dm_sales = getDmSales(spark)
     # dm_sales.show()
 
-    # dm_sales_items = getDmSalesItems(spark)
+    dm_sales_items = getDmSalesItems(spark)
     # dm_sales_items.show()
 
     dm_states = getDmStates(spark)
-    dm_states.show()
+    # dm_states.show()
 
     ft_sales = setFtSales(spark)
     ft_sales.show()
-
 
 if __name__ == "__main__":
     main()
